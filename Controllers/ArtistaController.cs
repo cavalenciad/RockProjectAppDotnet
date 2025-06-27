@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using RockProjectBackend.Interfaces;
 using RockProjectBackend.Models;
 using RockProjectBackend.Services;
@@ -10,17 +11,27 @@ namespace RockProjectBackend.Controllers
     public class ArtistaController : ControllerBase
     {
         private readonly IArtistaService _artistaService;
+        private readonly ILogger<ArtistaController> _logger;
 
-        public ArtistaController(IArtistaService artistaService)
+        public ArtistaController(IArtistaService artistaService, ILogger<ArtistaController> logger)
         {
             _artistaService = artistaService;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Artista>>> GetAllArtistas()
         {
-            var artistas = await _artistaService.GetAllArtistasAsync();
-            return Ok(artistas);
+            try
+            {
+                var artistas = await _artistaService.GetAllArtistasAsync();
+                return Ok(artistas);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving artistas");
+                return StatusCode(500, $"Error interno del servidor: {ex.Message} --- StackTrace: {ex.StackTrace}");
+            }
         }
 
         [HttpGet("{id}")]
