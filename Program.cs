@@ -42,11 +42,11 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-if (app.Environment.IsProduction())
+/* if (app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI(); 
-}
+} */
 
 app.UseHttpsRedirection();
 app.MapControllers();
