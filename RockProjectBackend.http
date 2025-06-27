@@ -1,0 +1,6 @@
+@RockProjectBackend_HostAddress = http://localhost:5276
+
+GET {{RockProjectBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
