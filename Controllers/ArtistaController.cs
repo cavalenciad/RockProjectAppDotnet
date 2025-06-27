@@ -3,54 +3,57 @@ using RockProjectBackend.Interfaces;
 using RockProjectBackend.Models;
 using RockProjectBackend.Services;
 
-[ApiController]
-[Route("api/[controller]")]
-public class ArtistaController : ControllerBase
+namespace RockProjectBackend.Controllers
 {
-    private readonly IArtistaService _artistaService;
-
-    public ArtistaController(IArtistaService artistaService)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ArtistaController : ControllerBase
     {
-        _artistaService = artistaService;
-    }
+        private readonly IArtistaService _artistaService;
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Artista>>> GetAllArtistas()
-    {
-        var artistas = await _artistaService.GetAllArtistasAsync();
-        return Ok(artistas);
-    }
+        public ArtistaController(IArtistaService artistaService)
+        {
+            _artistaService = artistaService;
+        }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Artista>> GetArtistaById(int id)
-    {
-        var artista = await _artistaService.GetArtistaByIdAsync(id);
-        
-        if (artista is null)
-            return NotFound();
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Artista>>> GetAllArtistas()
+        {
+            var artistas = await _artistaService.GetAllArtistasAsync();
+            return Ok(artistas);
+        }
 
-        return Ok(artista!);
-    }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Artista>> GetArtistaById(int id)
+        {
+            var artista = await _artistaService.GetArtistaByIdAsync(id);
+            
+            if (artista is null)
+                return NotFound();
 
-    [HttpPost]
-    public async Task<ActionResult<Artista>> CreateArtista([FromBody] Artista artista)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return Ok(artista!);
+        }
 
-        // Validaciones adicionales para los nuevos campos
-        if (!string.IsNullOrEmpty(artista.Resena) && artista.Resena.Length > 1000)
-            return BadRequest("La reseña no puede exceder 1000 caracteres");
+        [HttpPost]
+        public async Task<ActionResult<Artista>> CreateArtista([FromBody] Artista artista)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-        if (!string.IsNullOrEmpty(artista.Imagen) && !Uri.IsWellFormedUriString(artista.Imagen, UriKind.Absolute))
-            return BadRequest("La URL de la imagen no es válida");
+            try
+            {
+                var createdArtista = await _artistaService.CreateArtistaAsync(artista);
+                
+                if (createdArtista == null)
+                    return BadRequest("Invalid artist data");
 
-        var createdArtista = await _artistaService.CreateArtistaAsync(artista);
-        
-        if (createdArtista == null)
-            return BadRequest("Invalid artist data");
-
-        return CreatedAtAction(nameof(GetArtistaById), 
-            new { id = createdArtista.Id }, createdArtista);
+                return CreatedAtAction(nameof(GetArtistaById), 
+                    new { id = createdArtista.Id }, createdArtista);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }
