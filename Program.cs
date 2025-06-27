@@ -40,7 +40,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI(); 

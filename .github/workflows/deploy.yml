@@ -1,4 +1,4 @@
-name: Deploy to Azure App Service
+name: Deploy to Azure Web App
 on:
   push:
     branches:
@@ -28,6 +28,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           slot-name: 'production'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: './publish'
