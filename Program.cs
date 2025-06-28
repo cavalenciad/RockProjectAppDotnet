@@ -37,12 +37,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "AllowRemixApp",
-        policy =>
-            {
-                policy.WithOrigins("http://localhost:5173")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-    });
+                      policy  =>
+                      {
+                          // VERIFICA ESTA LÍNEA CARÁCTER POR CARÁCTER
+                          policy.AllowAnyOrigin()
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                      });
 });
 
 // --- Fin de Servicios ---
@@ -56,6 +57,8 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowRemixApp"); 
 
 // Habilitar los controladores para que respondan a las rutas
 app.MapControllers();
